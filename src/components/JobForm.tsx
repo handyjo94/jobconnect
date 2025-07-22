@@ -74,6 +74,93 @@ export default function JobForm({
     }
   }
 
+  const handleDescriptionPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    e.preventDefault()
+    
+    // Get pasted content
+    const paste = e.clipboardData.getData('text/html') || e.clipboardData.getData('text/plain')
+    
+    if (paste) {
+      // Clean and format the pasted content
+      const cleanedText = cleanJobDescription(paste)
+      
+      // Get current cursor position
+      const textarea = e.target as HTMLTextAreaElement
+      const start = textarea.selectionStart
+      const end = textarea.selectionEnd
+      
+      // Insert cleaned text at cursor position
+      const currentValue = formData.description
+      const newValue = currentValue.substring(0, start) + cleanedText + currentValue.substring(end)
+      
+      handleChange('description', newValue)
+      
+      // Restore cursor position after the inserted text
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + cleanedText.length
+      }, 0)
+    }
+  }
+
+  const cleanJobDescription = (htmlContent: string): string => {
+    // Create a temporary div to parse HTML
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = htmlContent
+    
+    // Remove script and style elements
+    const scripts = tempDiv.querySelectorAll('script, style')
+    scripts.forEach(el => el.remove())
+    
+    // Convert common HTML elements to formatted text
+    let text = tempDiv.innerHTML
+    
+    // Replace line breaks and paragraphs
+    text = text.replace(/<br\s*\/?>/gi, '\n')
+    text = text.replace(/<\/p>/gi, '\n\n')
+    text = text.replace(/<p[^>]*>/gi, '')
+    
+    // Handle lists
+    text = text.replace(/<\/li>/gi, '\n')
+    text = text.replace(/<li[^>]*>/gi, '• ')
+    text = text.replace(/<\/?[uo]l[^>]*>/gi, '\n')
+    
+    // Handle headings
+    text = text.replace(/<\/h[1-6]>/gi, '\n\n')
+    text = text.replace(/<h[1-6][^>]*>/gi, '')
+    
+    // Handle strong/bold text (keep the text, remove tags)
+    text = text.replace(/<\/?strong[^>]*>/gi, '')
+    text = text.replace(/<\/?b[^>]*>/gi, '')
+    
+    // Handle emphasis/italic text
+    text = text.replace(/<\/?em[^>]*>/gi, '')
+    text = text.replace(/<\/?i[^>]*>/gi, '')
+    
+    // Remove all remaining HTML tags
+    text = text.replace(/<[^>]*>/g, '')
+    
+    // Decode HTML entities
+    text = text.replace(/&nbsp;/g, ' ')
+    text = text.replace(/&amp;/g, '&')
+    text = text.replace(/&lt;/g, '<')
+    text = text.replace(/&gt;/g, '>')
+    text = text.replace(/&quot;/g, '"')
+    text = text.replace(/&#39;/g, "'")
+    text = text.replace(/&ldquo;/g, '"')
+    text = text.replace(/&rdquo;/g, '"')
+    text = text.replace(/&lsquo;/g, "'")
+    text = text.replace(/&rsquo;/g, "'")
+    text = text.replace(/&mdash;/g, '—')
+    text = text.replace(/&ndash;/g, '–')
+    
+    // Clean up extra whitespace and line breaks
+    text = text.replace(/\n\s*\n\s*\n/g, '\n\n') // Max 2 consecutive line breaks
+    text = text.replace(/[ \t]+/g, ' ') // Multiple spaces to single space
+    text = text.trim()
+    
+    return text
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Job Title */}
@@ -173,6 +260,7 @@ export default function JobForm({
           rows={8}
           value={formData.description}
           onChange={(e) => handleChange('description', e.target.value)}
+          onPaste={handleDescriptionPaste}
           placeholder="Describe the role, responsibilities, requirements, and any other relevant details..."
           className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white resize-vertical ${
             errors.description 
@@ -181,10 +269,15 @@ export default function JobForm({
           }`}
           disabled={isLoading}
         />
-        <div className="mt-1 flex justify-between">
-          {errors.description && (
-            <p className="text-sm text-red-600 dark:text-red-400">{errors.description}</p>
-          )}
+        <div className="mt-1 flex justify-between items-start">
+          <div className="flex flex-col">
+            {errors.description && (
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.description}</p>
+            )}
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+              💡 Tip: You can paste job descriptions from anywhere - formatting will be preserved!
+            </p>
+          </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 ml-auto">
             {formData.description.length} characters
             {formData.description.length < 50 && formData.description.length > 0 && (
