@@ -52,9 +52,9 @@ export default function AuthButton() {
     return (
       <div className="flex items-center gap-3">
         <Link 
-          href="/dashboard"
+          href="/profile"
           className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 group"
-          title="View Dashboard"
+          title="View Profile"
         >
           <div className="flex-shrink-0">
             {user.user_metadata?.avatar_url ? (

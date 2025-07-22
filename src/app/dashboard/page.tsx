@@ -1,82 +1,293 @@
-import { createClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useState, useEffect } from 'react'
+import ProtectedRoute from '@/components/ProtectedRoute'
+import UserProfile from '@/components/UserProfile'
+import JobCard from '@/components/JobCard'
+import JobForm from '@/components/JobForm'
 import Link from 'next/link'
-import LogoutButton from '@/components/auth/LogoutButton'
+import { createClient } from '@/utils/supabase/client'
+import { jobService } from '@/lib/jobs'
+import type { Job, JobFormData } from '@/lib/types'
+import type { User } from '@supabase/supabase-js'
 
-export default async function DashboardPage() {
-  const supabase = await createClient()
+export default function Dashboard() {
+  const [userJobs, setUserJobs] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
+  const [editingJob, setEditingJob] = useState<Job | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const supabase = createClient()
 
-  const { data: { user }, error } = await supabase.auth.getUser()
+  useEffect(() => {
+    loadUserData()
+  }, [])
 
-  if (error || !user) {
-    redirect('/auth/login')
+  const loadUserData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUser(user)
+        const jobs = await jobService.getUserJobs(user.id)
+        setUserJobs(jobs)
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEditJob = (job: Job) => {
+    setEditingJob(job)
+  }
+
+  const handleUpdateJob = async (jobData: JobFormData) => {
+    if (!editingJob) return
+
+    try {
+      setIsSubmitting(true)
+      await jobService.updateJob(editingJob.id, jobData)
+      await loadUserData()
+      setEditingJob(null)
+    } catch (error) {
+      console.error('Error updating job:', error)
+      alert('Failed to update job. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteJob = async (jobId: string) => {
+    if (!window.confirm('Are you sure you want to delete this job posting?')) {
+      return
+    }
+
+    try {
+      await jobService.deleteJob(jobId)
+      await loadUserData()
+    } catch (error) {
+      console.error('Error deleting job:', error)
+      alert('Failed to delete job. Please try again.')
+    }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <header className="bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-700/20 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link 
-              href="/"
-              className="text-3xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
-            >
-              JobConnect
-            </Link>
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 bg-white/50 dark:bg-gray-800/50">
-            <div className="text-center">
-              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-                Welcome to your dashboard!
-              </h2>
-              
-              <div className="bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-700/20 rounded-lg p-6 max-w-md mx-auto border border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                  User Information
-                </h3>
-                <div className="space-y-3 text-left">
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Email</span>
-                    <span className="text-sm text-gray-900 dark:text-white mt-1">{user.email}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">User ID</span>
-                    <span className="text-sm text-gray-900 dark:text-white mt-1 font-mono">{user.id}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Email Confirmed</span>
-                    <span className={`text-sm mt-1 font-medium ${user.email_confirmed_at ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
-                      {user.email_confirmed_at ? '✓ Verified' : '⚠ Pending'}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Member Since</span>
-                    <span className="text-sm text-gray-900 dark:text-white mt-1">
-                      {new Date(user.created_at).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg max-w-2xl mx-auto">
-                <p className="text-sm text-blue-800 dark:text-blue-200">
-                  🔒 This is a protected page. You can only access this dashboard when authenticated.
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        {/* Header */}
+        <header className="bg-white dark:bg-gray-800 shadow">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-6">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  Dashboard
+                </h1>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Manage your job postings and profile
                 </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/jobs/new"
+                  className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Post a Job
+                </Link>
+                <Link
+                  href="/jobs"
+                  className="inline-flex items-center px-5 py-3 border border-emerald-300 dark:border-emerald-600 text-sm font-medium rounded-xl text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z" />
+                  </svg>
+                  Browse Jobs
+                </Link>
+                <Link
+                  href="/"
+                  className="inline-flex items-center px-4 py-3 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  Home
+                </Link>
               </div>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </header>
+
+        {/* Main content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid gap-8">
+            {/* User Profile */}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Your Profile
+              </h2>
+              <UserProfile />
+            </div>
+
+            {/* Your Job Postings */}
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Your Job Postings
+                </h2>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {loading ? 'Loading...' : `${userJobs.length} job${userJobs.length !== 1 ? 's' : ''}`}
+                </div>
+              </div>
+
+              {loading && (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {!loading && userJobs.length > 0 && (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {userJobs.map((job) => (
+                    <JobCard 
+                      key={job.id} 
+                      job={job} 
+                      showActions={true}
+                      onEdit={handleEditJob}
+                      onDelete={handleDeleteJob}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {!loading && userJobs.length === 0 && (
+                <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z" />
+                  </svg>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No job postings yet</h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Start by creating your first job posting.
+                  </p>
+                  <div className="mt-6">
+                    <Link
+                      href="/jobs/new"
+                      className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      Post Your First Job
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Dashboard Stats */}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Overview
+              </h2>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z" />
+                      </svg>
+                    </div>
+                    <div className="ml-4">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Active Jobs
+                      </h3>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {userJobs.length}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-4">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Authentication
+                      </h3>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        Verified
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <div className="ml-4">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Account Status
+                      </h3>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        Active
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Edit Job Modal */}
+          {editingJob && (
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-50 dark:bg-gray-900 dark:bg-opacity-75 flex items-center justify-center p-4 z-50">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="sticky top-0 bg-white dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                      Edit Job: {editingJob.title}
+                    </h3>
+                    <button
+                      onClick={() => setEditingJob(null)}
+                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div className="px-6 py-4">
+                  <JobForm
+                    initialData={editingJob}
+                    onSubmit={handleUpdateJob}
+                    submitLabel="Update Job"
+                    isLoading={isSubmitting}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </ProtectedRoute>
   )
 } 
