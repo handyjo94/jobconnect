@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import UserProfile from "@/components/UserProfile";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -11,21 +12,25 @@ export default function ProfilePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between py-4">
               <div className="flex items-center">
-                <Link 
+                <Link
                   href="/"
                   className="flex items-center hover:opacity-80 transition-opacity"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z" />
-                    </svg>
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3 p-1">
+                    <Image
+                      src="/favicon.ico"
+                      alt="JobConnect"
+                      width={24}
+                      height={24}
+                      className="w-6 h-6"
+                    />
                   </div>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">
                     JobConnect
                   </span>
                 </Link>
               </div>
-              
+
               <Link
                 href="/"
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
@@ -50,7 +55,7 @@ export default function ProfilePage() {
           {/* Profile Content */}
           <div className="space-y-6">
             <UserProfile />
-            
+
             {/* Additional Actions */}
             <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
@@ -82,4 +87,4 @@ export default function ProfilePage() {
       </div>
     </ProtectedRoute>
   );
-} 
+}
