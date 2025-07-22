@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import UserProfile from '@/components/UserProfile'
 import JobCard from '@/components/JobCard'
@@ -10,25 +10,18 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { jobService } from '@/lib/jobs'
 import type { Job, JobFormData } from '@/lib/types'
-import type { User } from '@supabase/supabase-js'
 
 export default function Dashboard() {
   const [userJobs, setUserJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<User | null>(null)
   const [editingJob, setEditingJob] = useState<Job | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const supabase = createClient()
 
-  useEffect(() => {
-    loadUserData()
-  }, [])
-
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        setUser(user)
         const jobs = await jobService.getUserJobs(user.id)
         setUserJobs(jobs)
       }
@@ -37,7 +30,11 @@ export default function Dashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase.auth])
+
+  useEffect(() => {
+    loadUserData()
+  }, [loadUserData])
 
   const handleEditJob = (job: Job) => {
     setEditingJob(job)
