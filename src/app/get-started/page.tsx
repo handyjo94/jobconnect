@@ -1,18 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
 import GoogleOAuthButton from '@/components/auth/GoogleOAuthButton'
 import AuthDivider from '@/components/auth/AuthDivider'
 
 export default async function GetStarted() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
-  // If user is already authenticated, redirect to dashboard
-  if (user) {
-    redirect('/dashboard')
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
@@ -34,12 +28,21 @@ export default async function GetStarted() {
                 JobConnect
               </span>
             </Link>
-            <Link
-              href="/auth/login"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors"
-            >
-              Already have an account? Sign In
-            </Link>
+            {!user ? (
+              <Link
+                href="/auth/login"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors"
+              >
+                Already have an account? Sign In
+              </Link>
+            ) : (
+              <Link
+                href="/dashboard"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors"
+              >
+                Go to Dashboard
+              </Link>
+            )}
           </div>
         </div>
       </header>

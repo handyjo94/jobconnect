@@ -63,9 +63,9 @@ export default function ResetPasswordForm() {
       if (error) {
         setError(error.message)
       } else {
-        setMessage('Password updated successfully! Redirecting to dashboard...')
+        setMessage('Password updated successfully! Redirecting to homepage...')
         setTimeout(() => {
-          router.push('/dashboard')
+          router.push('/')
         }, 2000)
       }
     } catch (err) {
