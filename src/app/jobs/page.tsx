@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import JobCard from '@/components/JobCard'
 import JobFiltersComponent from '@/components/JobFilters'
+import HomeButton from '@/components/HomeButton'
 import { jobService } from '@/lib/jobs'
 import type { Job, JobFilters } from '@/lib/types'
 
@@ -96,15 +97,7 @@ export default function JobsPage() {
                 </svg>
                 Post a Job
               </Link>
-              <Link
-                href="/"
-                className="inline-flex items-center px-4 py-3 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hover:shadow-lg"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Home
-              </Link>
+              <HomeButton />
             </div>
           </div>
         </div>

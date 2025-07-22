@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm'
+import HomeButton from '@/components/HomeButton'
 
 export default function ForgotPasswordPage() {
   return (
@@ -24,13 +25,8 @@ export default function ForgotPasswordPage() {
           <ForgotPasswordForm />
         </div>
         
-        <div className="text-center">
-          <Link
-            href="/"
-            className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-          >
-            ← Back to home
-          </Link>
+        <div className="flex justify-center">
+          <HomeButton />
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import UserProfile from "@/components/UserProfile";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import HomeButton from "@/components/HomeButton";
 
 export default function ProfilePage() {
   return (
@@ -31,12 +32,7 @@ export default function ProfilePage() {
                 </Link>
               </div>
 
-              <Link
-                href="/"
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
-              >
-                ← Back to Home
-              </Link>
+              <HomeButton />
             </div>
           </div>
         </header>
