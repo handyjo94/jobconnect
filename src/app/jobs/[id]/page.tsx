@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { jobService } from '@/lib/jobs'
@@ -19,23 +19,34 @@ export default function JobDetailPage() {
   const router = useRouter()
   const supabase = createClient()
 
+  const checkAuth = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    setUser(user)
+  }, [supabase.auth])
+
+  const checkIfJobIsSaved = useCallback(async () => {
+    if (!job || !user) return
+    
+    try {
+      const saved = await jobService.isJobSaved(job.id)
+      setIsSaved(saved)
+    } catch (err) {
+      console.error('Failed to check if job is saved:', err)
+    }
+  }, [job, user])
+
   useEffect(() => {
     if (params.id) {
       loadJob(params.id as string)
     }
     checkAuth()
-  }, [params.id])
+  }, [params.id, checkAuth])
 
   useEffect(() => {
     if (job && user) {
       checkIfJobIsSaved()
     }
-  }, [job, user])
-
-  const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    setUser(user)
-  }
+  }, [job, user, checkIfJobIsSaved])
 
   const loadJob = async (id: string) => {
     try {
@@ -52,17 +63,6 @@ export default function JobDetailPage() {
       console.error(err)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const checkIfJobIsSaved = async () => {
-    if (!job || !user) return
-    
-    try {
-      const saved = await jobService.isJobSaved(job.id)
-      setIsSaved(saved)
-    } catch (err) {
-      console.error('Failed to check if job is saved:', err)
     }
   }
 
