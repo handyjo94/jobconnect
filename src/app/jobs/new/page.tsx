@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import JobForm from '@/components/JobForm'
 import { jobService } from '@/lib/jobs'
