@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import JobForm from '@/components/JobForm'
-import HomeButton from '@/components/HomeButton'
 import { jobService } from '@/lib/jobs'
 import type { JobFormData } from '@/lib/types'
 
@@ -59,10 +58,10 @@ export default function NewJobPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        {/* Header */}
-        <header className="bg-white dark:bg-gray-800 shadow">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-6">
+        {/* Page Header */}
+        <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   Post a Job
@@ -71,21 +70,18 @@ export default function NewJobPage() {
                   Find the perfect candidate for your role
                 </p>
               </div>
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/jobs"
-                  className="inline-flex items-center px-4 py-2.5 border border-blue-300 dark:border-blue-600 text-sm font-medium rounded-xl text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hover:shadow-lg"
-                >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Browse Jobs
-                </Link>
-                <HomeButton />
-              </div>
+              <Link
+                href="/jobs"
+                className="inline-flex items-center px-4 py-2.5 border border-blue-300 dark:border-blue-600 text-sm font-medium rounded-xl text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hover:shadow-lg"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Browse Jobs
+              </Link>
             </div>
           </div>
-        </header>
+        </div>
 
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
