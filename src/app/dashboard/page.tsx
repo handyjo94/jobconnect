@@ -108,6 +108,12 @@ export default function Dashboard() {
     })
   }
 
+  const getJobCountText = () => {
+    if (loading) return 'Loading...'
+    const jobText = userJobs.length === 1 ? 'job' : 'jobs'
+    return `${userJobs.length} ${jobText}`
+  }
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -143,11 +149,7 @@ export default function Dashboard() {
                   Your Job Postings
                 </h2>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {(() => {
-                    if (loading) return 'Loading...'
-                    const jobText = userJobs.length === 1 ? 'job' : 'jobs'
-                    return `${userJobs.length} ${jobText}`
-                  })()}
+                  {getJobCountText()}
                 </div>
               </div>
 

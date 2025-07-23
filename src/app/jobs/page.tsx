@@ -29,6 +29,12 @@ export default function JobsPage() {
     }
   }
 
+  const getJobsFoundText = () => {
+    if (loading) return 'Loading...'
+    const plural = jobs.length !== 1 ? 's' : ''
+    return `${jobs.length} job${plural} found`
+  }
+
   const loadJobs = useCallback(async () => {
     try {
       setLoading(true)
@@ -96,11 +102,7 @@ export default function JobsPage() {
         {/* Results header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {(() => {
-              if (loading) return 'Loading...'
-              const plural = jobs.length !== 1 ? 's' : ''
-              return `${jobs.length} job${plural} found`
-            })()}
+            {getJobsFoundText()}
           </h2>
           <div className="text-sm text-gray-500 dark:text-gray-400">
             {getSortDescription(filters.sortBy)}

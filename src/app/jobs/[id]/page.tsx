@@ -106,6 +106,12 @@ export default function JobDetailPage() {
     }
   }
 
+  const getSaveButtonText = () => {
+    if (isSaving) return isSaved ? 'Unsaving...' : 'Saving...'
+    if (isSaved) return 'Saved'
+    return 'Save Job'
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -282,11 +288,7 @@ export default function JobDetailPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                   )}
-                  {(() => {
-                    if (isSaving) return isSaved ? 'Unsaving...' : 'Saving...'
-                    if (isSaved) return 'Saved'
-                    return 'Save Job'
-                  })()}
+                  {getSaveButtonText()}
                 </button>
               </div>
             </div>

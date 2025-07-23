@@ -59,6 +59,12 @@ export default function SavedJobsPage() {
     }
   }
 
+  const getSavedJobsText = () => {
+    if (savedJobs.length === 0) return `You haven't saved any jobs yet`
+    const jobText = savedJobs.length === 1 ? 'job' : 'jobs'
+    return `You have ${savedJobs.length} saved ${jobText}`
+  }
+
   if (loading) {
     return (
       <ProtectedRoute>
@@ -88,11 +94,7 @@ export default function SavedJobsPage() {
               Saved Jobs
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              {(() => {
-                if (savedJobs.length === 0) return `You haven't saved any jobs yet`
-                const jobText = savedJobs.length === 1 ? 'job' : 'jobs'
-                return `You have ${savedJobs.length} saved ${jobText}`
-              })()}
+              {getSavedJobsText()}
             </p>
           </div>
 
