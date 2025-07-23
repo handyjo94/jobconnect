@@ -35,48 +35,47 @@ export default function JobCard({ job, showActions = false, onEdit, onDelete }: 
   const cardHeight = showActions ? 'min-h-80' : 'min-h-64'
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow ${cardHeight} flex flex-col`}>
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 leading-tight">
+    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow ${cardHeight} flex flex-col w-full overflow-hidden`}>
+      <div className="flex justify-between items-start mb-4 min-w-0">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 leading-tight break-words">
             <Link
               href={`/jobs/${job.id}`}
-              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors line-clamp-2"
             >
               {job.title}
             </Link>
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 font-medium">
+          <p className="text-gray-600 dark:text-gray-400 font-medium truncate">
             {job.company}
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-500 flex items-center mt-1">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <p className="text-sm text-gray-500 dark:text-gray-500 flex items-center mt-1 min-w-0">
+            <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {job.location}
+            <span className="truncate">{job.location}</span>
           </p>
         </div>
-        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getJobTypeColor(job.job_type)}`}>
+        <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ml-2 flex-shrink-0 ${getJobTypeColor(job.job_type)}`}>
           {job.job_type}
         </span>
       </div>
 
       <div className="flex-1 flex flex-col min-h-0">
-        <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 leading-relaxed">
-          {job.description.length > 200 
-            ? `${job.description.substring(0, 200)}...` 
-            : job.description
-          }
-        </p>
+        <div className="text-gray-600 dark:text-gray-300 text-sm mb-4 leading-relaxed break-words overflow-hidden">
+          <p className="line-clamp-4 hyphens-auto">
+            {job.description}
+          </p>
+        </div>
 
-        <div className="flex justify-between items-center mt-auto pt-4">
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex justify-between items-center mt-auto pt-4 min-w-0">
+          <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
             Posted {formatDate(job.created_at)}
           </span>
           
           {showActions && (
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-shrink-0 ml-4">
               <Button
                 onClick={() => onEdit?.(job)}
                 variant="outline"
