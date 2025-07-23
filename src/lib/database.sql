@@ -32,7 +32,6 @@ CREATE TABLE saved_jobs (
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   job_id UUID REFERENCES jobs(id) ON DELETE CASCADE,
   saved_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  notes TEXT,
   UNIQUE(user_id, job_id)
 );
 

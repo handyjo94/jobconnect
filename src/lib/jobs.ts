@@ -150,7 +150,6 @@ export class JobService {
       .from('saved_jobs')
       .select(`
         saved_at,
-        notes,
         jobs!inner (
           id,
           title,
@@ -174,8 +173,7 @@ export class JobService {
     // Transform the data to return SavedJob objects with saved metadata
     return (data || []).map(item => ({
       ...(item.jobs as unknown as Job),
-      saved_at: item.saved_at,
-      notes: item.notes || undefined
+      saved_at: item.saved_at
     }))
   }
 
@@ -196,7 +194,7 @@ export class JobService {
     return !error && data !== null
   }
 
-  async saveJob(jobId: string, notes?: string): Promise<void> {
+  async saveJob(jobId: string): Promise<void> {
     const { data: { user } } = await this.supabase.auth.getUser()
     
     if (!user) {
@@ -207,8 +205,7 @@ export class JobService {
       .from('saved_jobs')
       .insert({
         user_id: user.id,
-        job_id: jobId,
-        notes: notes || null
+        job_id: jobId
       })
 
     if (error) {

@@ -12,7 +12,6 @@ export interface Job {
 
 export interface SavedJob extends Job {
   saved_at: string
-  notes?: string
 }
 
 export interface JobFormData {
