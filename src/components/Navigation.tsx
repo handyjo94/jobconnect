@@ -70,7 +70,19 @@ export default function Navigation() {
             </Link>
 
             {/* Public Navigation Links */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1">
+              <Link
+                href="/"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/')}`}
+              >
+                <div className="flex items-center">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <span className="hidden sm:inline">Home</span>
+                </div>
+              </Link>
+              
               <Link
                 href="/jobs"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/jobs')}`}
@@ -127,6 +139,18 @@ export default function Navigation() {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-1">
+            <Link
+              href="/"
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/')}`}
+            >
+              <div className="flex items-center">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Home
+              </div>
+            </Link>
+
             <Link
               href="/dashboard"
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/dashboard')}`}
@@ -193,6 +217,19 @@ export default function Navigation() {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="px-4 py-2 space-y-1">
+              <Link
+                href="/"
+                className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/')}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <div className="flex items-center">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  Home
+                </div>
+              </Link>
+
               <Link
                 href="/dashboard"
                 className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/dashboard')}`}
