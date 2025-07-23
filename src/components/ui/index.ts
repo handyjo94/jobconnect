@@ -1,3 +1,4 @@
 export { Button, buttonVariants } from './Button'
 export { LinkButton } from './LinkButton'
-export { Heading, headingVariants } from './Heading' 
+export { Heading } from './Heading'
+export { Icon, type IconName, type IconSize } from './Icon' 
