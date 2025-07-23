@@ -353,13 +353,12 @@ export default async function Home() {
               <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <li><Link href="/jobs/new" className="hover:text-blue-600">Post a Job</Link></li>
                 <li><Link href="/dashboard" className="hover:text-blue-600">Manage Jobs</Link></li>
-                <li><Link href="/pricing" className="hover:text-blue-600">Pricing</Link></li>
               </ul>
             </div>
           </div>
           
           <div className="border-t border-gray-200 dark:border-gray-700 pt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>&copy; 2024 JobConnect. All rights reserved.</p>
+            <p>&copy; 2025 JobConnect. All rights reserved.</p>
           </div>
         </div>
       </footer>
