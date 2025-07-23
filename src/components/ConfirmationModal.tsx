@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface ConfirmationModalProps {
   readonly isOpen: boolean
@@ -40,18 +41,14 @@ export default function ConfirmationModal({
 
   if (!isOpen) return null
 
-  const confirmButtonClasses = confirmButtonVariant === 'danger'
-    ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500 text-white'
-    : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 text-white'
-
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 dark:bg-gray-900 dark:bg-opacity-75 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <Heading level={3} size="lg" weight="semibold" spacing="none">
             {title}
-          </h3>
+          </Heading>
         </div>
 
         {/* Content */}
