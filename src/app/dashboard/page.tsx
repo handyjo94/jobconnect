@@ -6,6 +6,7 @@ import UserProfile from '@/components/UserProfile'
 import JobCard from '@/components/JobCard'
 import JobForm from '@/components/JobForm'
 import HomeButton from '@/components/HomeButton'
+import ConfirmationModal from '@/components/ConfirmationModal'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { jobService } from '@/lib/jobs'
@@ -16,6 +17,17 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [editingJob, setEditingJob] = useState<Job | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean
+    jobId: string | null
+    jobTitle: string
+    isDeleting: boolean
+  }>({
+    isOpen: false,
+    jobId: null,
+    jobTitle: '',
+    isDeleting: false
+  })
   const supabase = createClient()
 
   const loadUserData = useCallback(async () => {
@@ -56,18 +68,45 @@ export default function Dashboard() {
     }
   }
 
-  const handleDeleteJob = async (jobId: string) => {
-    if (!window.confirm('Are you sure you want to delete this job posting?')) {
-      return
-    }
+  const handleDeleteJob = (jobId: string) => {
+    const job = userJobs.find(j => j.id === jobId)
+    if (!job) return
+    
+    setDeleteConfirmation({
+      isOpen: true,
+      jobId,
+      jobTitle: job.title,
+      isDeleting: false
+    })
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirmation.jobId) return
 
     try {
-      await jobService.deleteJob(jobId)
+      setDeleteConfirmation(prev => ({ ...prev, isDeleting: true }))
+      await jobService.deleteJob(deleteConfirmation.jobId)
       await loadUserData()
+      setDeleteConfirmation({
+        isOpen: false,
+        jobId: null,
+        jobTitle: '',
+        isDeleting: false
+      })
     } catch (error) {
       console.error('Error deleting job:', error)
       alert('Failed to delete job. Please try again.')
+      setDeleteConfirmation(prev => ({ ...prev, isDeleting: false }))
     }
+  }
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmation({
+      isOpen: false,
+      jobId: null,
+      jobTitle: '',
+      isDeleting: false
+    })
   }
 
   return (
@@ -128,7 +167,11 @@ export default function Dashboard() {
                   Your Job Postings
                 </h2>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {loading ? 'Loading...' : `${userJobs.length} job${userJobs.length !== 1 ? 's' : ''}`}
+                  {(() => {
+                    if (loading) return 'Loading...'
+                    const jobText = userJobs.length === 1 ? 'job' : 'jobs'
+                    return `${userJobs.length} ${jobText}`
+                  })()}
                 </div>
               </div>
 
@@ -276,6 +319,19 @@ export default function Dashboard() {
               </div>
             </div>
           )}
+
+          {/* Delete Confirmation Modal */}
+          <ConfirmationModal
+            isOpen={deleteConfirmation.isOpen}
+            title="Delete Job Posting"
+            message={`Are you sure you want to delete "${deleteConfirmation.jobTitle}"? This action cannot be undone.`}
+            confirmLabel="Delete Job"
+            cancelLabel="Cancel"
+            confirmButtonVariant="danger"
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            isLoading={deleteConfirmation.isDeleting}
+          />
         </main>
       </div>
     </ProtectedRoute>
