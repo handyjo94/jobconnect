@@ -61,24 +61,13 @@ export default function NewJobPage() {
         {/* Page Header */}
         <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  Post a Job
-                </h1>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  Find the perfect candidate for your role
-                </p>
-              </div>
-              <Link
-                href="/jobs"
-                className="inline-flex items-center px-4 py-2.5 border border-blue-300 dark:border-blue-600 text-sm font-medium rounded-xl text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hover:shadow-lg"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                Browse Jobs
-              </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Post a Job
+              </h1>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Find the perfect candidate for your role
+              </p>
             </div>
           </div>
         </div>

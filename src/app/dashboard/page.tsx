@@ -114,24 +114,13 @@ export default function Dashboard() {
         {/* Page Header */}
         <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  Dashboard
-                </h1>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  Manage your job postings and profile
-                </p>
-              </div>
-              <Link
-                href="/jobs/new"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                Post a Job
-              </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Dashboard
+              </h1>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Manage your job postings and profile
+              </p>
             </div>
           </div>
         </div>
