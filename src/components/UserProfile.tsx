@@ -78,9 +78,6 @@ export default function UserProfile() {
           <p className="text-gray-500 dark:text-gray-400 truncate">
             {user.email}
           </p>
-          <p className="text-sm text-gray-400 dark:text-gray-500">
-            Signed in via Google
-          </p>
         </div>
       </div>
       
