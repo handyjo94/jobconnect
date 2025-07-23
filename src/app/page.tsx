@@ -50,7 +50,7 @@ export default async function Home() {
             {/* Main CTA Buttons - Always visible */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link
-                href={user ? "/jobs" : "/auth/login"}
+                href="/jobs"
                 className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 Browse Jobs
