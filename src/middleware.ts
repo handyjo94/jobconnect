@@ -9,18 +9,9 @@ export async function middleware(request: NextRequest) {
 
   // Check if we're on auth pages
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
-  const isDashboard = request.nextUrl.pathname.startsWith('/dashboard')
 
   // Get current user
   const { data: { user } } = await supabase.auth.getUser()
-
-  // Redirect logic
-  if (isDashboard && !user) {
-    // Redirect to login if trying to access dashboard without auth
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
-    return Response.redirect(url)
-  }
 
   if (isAuthPage && user) {
     // Redirect to home page if already authenticated
