@@ -1,9 +1,6 @@
 'use client'
 
-import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import type { User } from '@supabase/supabase-js'
+import { useAuth } from '@/hooks/useAuth'
 
 interface ProtectedRouteProps {
   readonly children: React.ReactNode
@@ -16,37 +13,7 @@ export default function ProtectedRoute({
   fallback,
   redirectTo = '/auth/login'
 }: ProtectedRouteProps) {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
-  const supabase = createClient()
-
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
-      
-      if (!user) {
-        router.push(redirectTo)
-      }
-    }
-
-    getUser()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setUser(session?.user ?? null)
-        setLoading(false)
-        
-        if (!session?.user) {
-          router.push(redirectTo)
-        }
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [supabase.auth, router, redirectTo])
+  const { user, loading } = useAuth({ redirectTo })
 
   if (loading) {
     return (

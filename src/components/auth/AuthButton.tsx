@@ -1,46 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/utils/supabase/client'
-import type { User } from '@supabase/supabase-js'
+import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/Button'
 import { LinkButton } from '@/components/ui/LinkButton'
 
 export default function AuthButton() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [isSigningOut, setIsSigningOut] = useState(false)
-  const supabase = createClient()
-
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
-    }
-
-    getUser()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null)
-        setLoading(false)
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [supabase.auth])
-
-  const handleSignOut = async () => {
-    setIsSigningOut(true)
-    try {
-      await supabase.auth.signOut()
-    } finally {
-      setIsSigningOut(false)
-    }
-  }
+  const { user, loading, signOut, isSigningOut } = useAuth()
 
   if (loading) {
     return (
@@ -78,7 +45,7 @@ export default function AuthButton() {
           </span>
         </Link>
         <Button
-          onClick={handleSignOut}
+          onClick={signOut}
           loading={isSigningOut}
           loadingText="Signing out..."
           variant="ghost"

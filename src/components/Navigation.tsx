@@ -3,32 +3,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
-import { useEffect, useState } from 'react'
-import type { User } from '@supabase/supabase-js'
+import { useAuth } from '@/hooks/useAuth'
+import { useState } from 'react'
 
 export default function Navigation() {
-  const [user, setUser] = useState<User | null>(null)
+  const { user } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
-  const supabase = createClient()
-
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-    }
-
-    getUser()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null)
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [supabase.auth])
 
   // Don't show navigation on auth pages, landing pages
   if (pathname?.startsWith('/auth') || pathname === '/' || pathname === '/get-started') {

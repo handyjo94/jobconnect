@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/utils/supabase/client'
+import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/Button'
 
 interface GoogleOAuthButtonProps {
@@ -10,17 +10,12 @@ interface GoogleOAuthButtonProps {
 
 export default function GoogleOAuthButton({ mode }: GoogleOAuthButtonProps) {
   const [loading, setLoading] = useState(false)
-  const supabase = createClient()
+  const { signInWithOAuth } = useAuth()
 
   const handleGoogleAuth = async () => {
     setLoading(true)
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      })
+      const { error } = await signInWithOAuth('google')
 
       if (error) {
         console.error('Google auth error:', error.message)
