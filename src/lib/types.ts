@@ -10,6 +10,11 @@ export interface Job {
   updated_at: string
 }
 
+export interface SavedJob extends Job {
+  saved_at: string
+  notes?: string
+}
+
 export interface JobFormData {
   title: string
   company: string

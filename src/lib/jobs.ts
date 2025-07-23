@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/client'
-import type { Job, JobFormData, JobFilters } from './types'
+import type { Job, SavedJob, JobFormData, JobFilters } from './types'
 
 export class JobService {
   private readonly supabase = createClient()
@@ -135,6 +135,116 @@ export class JobService {
     if (error) {
       console.error('Error deleting job:', error)
       throw error
+    }
+  }
+
+  // Saved Jobs functionality
+  async getSavedJobs(): Promise<SavedJob[]> {
+    const { data: { user } } = await this.supabase.auth.getUser()
+    
+    if (!user) {
+      throw new Error('User not authenticated')
+    }
+
+    const { data, error } = await this.supabase
+      .from('saved_jobs')
+      .select(`
+        saved_at,
+        notes,
+        jobs!inner (
+          id,
+          title,
+          company,
+          description,
+          location,
+          job_type,
+          user_id,
+          created_at,
+          updated_at
+        )
+      `)
+      .eq('user_id', user.id)
+      .order('saved_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching saved jobs:', error)
+      throw error
+    }
+
+    // Transform the data to return SavedJob objects with saved metadata
+    return (data || []).map(item => ({
+      ...(item.jobs as unknown as Job),
+      saved_at: item.saved_at,
+      notes: item.notes || undefined
+    }))
+  }
+
+  async isJobSaved(jobId: string): Promise<boolean> {
+    const { data: { user } } = await this.supabase.auth.getUser()
+    
+    if (!user) {
+      return false
+    }
+
+    const { data, error } = await this.supabase
+      .from('saved_jobs')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('job_id', jobId)
+      .single()
+
+    return !error && data !== null
+  }
+
+  async saveJob(jobId: string, notes?: string): Promise<void> {
+    const { data: { user } } = await this.supabase.auth.getUser()
+    
+    if (!user) {
+      throw new Error('User not authenticated')
+    }
+
+    const { error } = await this.supabase
+      .from('saved_jobs')
+      .insert({
+        user_id: user.id,
+        job_id: jobId,
+        notes: notes || null
+      })
+
+    if (error) {
+      console.error('Error saving job:', error)
+      throw error
+    }
+  }
+
+  async unsaveJob(jobId: string): Promise<void> {
+    const { data: { user } } = await this.supabase.auth.getUser()
+    
+    if (!user) {
+      throw new Error('User not authenticated')
+    }
+
+    const { error } = await this.supabase
+      .from('saved_jobs')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('job_id', jobId)
+
+    if (error) {
+      console.error('Error unsaving job:', error)
+      throw error
+    }
+  }
+
+  async toggleSaveJob(jobId: string): Promise<boolean> {
+    const isSaved = await this.isJobSaved(jobId)
+    
+    if (isSaved) {
+      await this.unsaveJob(jobId)
+      return false
+    } else {
+      await this.saveJob(jobId)
+      return true
     }
   }
 }

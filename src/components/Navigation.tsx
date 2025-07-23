@@ -176,6 +176,18 @@ export default function Navigation() {
             </Link>
 
             <Link
+              href="/saved-jobs"
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/saved-jobs')}`}
+            >
+              <div className="flex items-center">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                Saved Jobs
+              </div>
+            </Link>
+
+            <Link
               href="/jobs/new"
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/jobs/new')}`}
             >
@@ -253,6 +265,19 @@ export default function Navigation() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z" />
                   </svg>
                   Browse Jobs
+                </div>
+              </Link>
+
+              <Link
+                href="/saved-jobs"
+                className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/saved-jobs')}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <div className="flex items-center">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  Saved Jobs
                 </div>
               </Link>
 
