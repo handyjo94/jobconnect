@@ -30,8 +30,15 @@ export default function Navigation() {
     return () => subscription.unsubscribe()
   }, [supabase.auth])
 
-  // Don't show navigation on auth pages, landing pages, or when not authenticated
-  if (pathname?.startsWith('/auth') || pathname === '/' || pathname === '/get-started' || !user) {
+  // Don't show navigation on auth pages, landing pages
+  if (pathname?.startsWith('/auth') || pathname === '/' || pathname === '/get-started') {
+    return null
+  }
+
+  // For public pages (like /jobs) without authentication, show simplified navigation
+  const isPublicPage = pathname === '/jobs' || pathname?.startsWith('/jobs/')
+  
+  if (!user && !isPublicPage) {
     return null
   }
 
@@ -40,6 +47,64 @@ export default function Navigation() {
            'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
   }
 
+  // Simplified navigation for unauthenticated users on public pages
+  if (!user && isPublicPage) {
+    return (
+      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3 p-1">
+                <Image
+                  src="/favicon.ico"
+                  alt="JobConnect"
+                  width={20}
+                  height={20}
+                  className="w-5 h-5"
+                />
+              </div>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                JobConnect
+              </span>
+            </Link>
+
+            {/* Public Navigation Links */}
+            <div className="flex items-center space-x-4">
+              <Link
+                href="/jobs"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/jobs')}`}
+              >
+                <div className="flex items-center">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z" />
+                  </svg>
+                  <span className="hidden sm:inline">Browse Jobs</span>
+                  <span className="sm:hidden">Jobs</span>
+                </div>
+              </Link>
+              
+              <Link
+                href="/auth/login"
+                className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+              >
+                Sign In
+              </Link>
+              
+              <Link
+                href="/auth/register"
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Sign Up
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+    )
+  }
+
+  // Full navigation for authenticated users
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
