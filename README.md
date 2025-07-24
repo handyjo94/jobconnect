@@ -62,8 +62,10 @@ Open [http://localhost:3000](http://localhost:3000)
 src/
 ├── app/           # Next.js pages (auth, jobs, dashboard)
 ├── components/    # Reusable components (auth, UI)
+├── hooks/         # Custom React hooks (useAuth)
 ├── lib/          # Services and utilities
-└── utils/        # Supabase client configurations
+├── utils/        # Supabase client configurations
+└── middleware.ts  # Next.js middleware for auth protection
 ```
 
 ## What Would I Improve Given More Time?
